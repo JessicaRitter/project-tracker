@@ -111,11 +111,28 @@ CREATE TABLE students (
     id integer NOT NULL,
     first_name character varying(30),
     last_name character varying(30),
-    github character varying(30)
+    github character varying(30) NOT NULL
 );
 
 
 ALTER TABLE students OWNER TO "user";
+
+--
+-- Name: report_card_view; Type: VIEW; Schema: public; Owner: user
+--
+
+CREATE VIEW report_card_view AS
+ SELECT students.first_name,
+    students.last_name,
+    projects.title,
+    projects.max_grade,
+    grades.grade
+   FROM ((students
+     JOIN grades ON (((students.github)::text = (grades.student_github)::text)))
+     JOIN projects ON (((projects.title)::text = (grades.project_title)::text)));
+
+
+ALTER TABLE report_card_view OWNER TO "user";
 
 --
 -- Name: students_id_seq; Type: SEQUENCE; Schema: public; Owner: user
@@ -239,7 +256,7 @@ ALTER TABLE ONLY projects
 --
 
 ALTER TABLE ONLY students
-    ADD CONSTRAINT students_pkey PRIMARY KEY (id);
+    ADD CONSTRAINT students_pkey PRIMARY KEY (github);
 
 
 --
